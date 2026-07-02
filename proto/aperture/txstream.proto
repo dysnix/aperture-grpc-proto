@@ -4,6 +4,7 @@ package aperture;
 
 service Aperture {
   rpc SubscribeTransactions(SubscribeTransactionsRequest) returns (stream DecodedTransaction);
+  rpc SubscribeTransactionBatches(SubscribeTransactionsRequest) returns (stream DecodedTransactionBatch);
 }
 
 message SubscribeTransactionsRequest {
@@ -12,6 +13,10 @@ message SubscribeTransactionsRequest {
   repeated bytes account_include = 3;
   repeated bytes account_exclude = 4;
   repeated bytes account_required = 5;
+  // When true, responses keep slot/index/is_vote/timestamp/signatures and omit
+  // message account/instruction payloads. Useful for lightweight monitoring
+  // clients that only need signature timing.
+  bool signatures_only = 6;
 }
 
 enum VoteFilter {
@@ -33,6 +38,10 @@ message DecodedTransaction {
   repeated bytes loaded_readonly_addresses = 10;
   bytes recent_blockhash = 11;
   repeated CompiledInstruction instructions = 12;
+}
+
+message DecodedTransactionBatch {
+  repeated DecodedTransaction transactions = 1;
 }
 
 enum TransactionVersion {
