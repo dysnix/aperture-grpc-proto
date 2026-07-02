@@ -18,7 +18,7 @@ balances, rewards, inner instructions, or compute units.
 
 ```toml
 [dependencies]
-aperture-grpc-proto = "0.1.0"
+aperture-grpc-proto = "0.2.0"
 ```
 
 For unreleased development builds:

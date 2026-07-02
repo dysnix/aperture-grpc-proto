@@ -1,7 +1,7 @@
 [package]
 name = "aperture-grpc-proto"
 edition = "2024"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Dysnix"]
 description = "Generated Rust protobuf and gRPC bindings for the Aperture transaction stream"
 homepage = "https://rpcfast.com"
