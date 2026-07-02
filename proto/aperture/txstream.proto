@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package aperture;
+
+service Aperture {
+  rpc SubscribeTransactions(SubscribeTransactionsRequest) returns (stream DecodedTransaction);
+}
+
+message SubscribeTransactionsRequest {
+  VoteFilter vote = 1;
+  bytes signature = 2;
+  repeated bytes account_include = 3;
+  repeated bytes account_exclude = 4;
+  repeated bytes account_required = 5;
+}
+
+enum VoteFilter {
+  VOTE_FILTER_ALL = 0;
+  VOTE_FILTER_VOTE_ONLY = 1;
+  VOTE_FILTER_NON_VOTE_ONLY = 2;
+}
+
+message DecodedTransaction {
+  uint64 slot = 1;
+  uint64 index = 2;
+  bool is_vote = 3;
+  uint64 created_at_unix_nanos = 4;
+  repeated bytes signatures = 5;
+  TransactionVersion version = 6;
+  MessageHeader header = 7;
+  repeated bytes static_account_keys = 8;
+  repeated bytes loaded_writable_addresses = 9;
+  repeated bytes loaded_readonly_addresses = 10;
+  bytes recent_blockhash = 11;
+  repeated CompiledInstruction instructions = 12;
+}
+
+enum TransactionVersion {
+  TRANSACTION_VERSION_LEGACY = 0;
+  TRANSACTION_VERSION_V0 = 1;
+}
+
+message MessageHeader {
+  uint32 num_required_signatures = 1;
+  uint32 num_readonly_signed_accounts = 2;
+  uint32 num_readonly_unsigned_accounts = 3;
+}
+
+message CompiledInstruction {
+  uint32 program_id_index = 1;
+  repeated uint32 accounts = 2 [packed = true];
+  bytes data = 3;
+}

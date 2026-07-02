@@ -1,0 +1,22 @@
+[package]
+name = "aperture-grpc-proto"
+edition = "2024"
+version = "0.1.0"
+authors = ["Dysnix"]
+description = "Generated Rust protobuf and gRPC bindings for the Aperture transaction stream"
+homepage = "https://rpcfast.com"
+repository = "https://github.com/dysnix/aperture-grpc-proto"
+license = "Apache-2.0"
+readme = "README.md"
+keywords = ["aperture", "grpc", "protobuf", "solana"]
+categories = ["api-bindings", "network-programming"]
+include = ["build.rs", "src/**", "proto/**", "README.md", "LICENSE"]
+
+[dependencies]
+prost = "0.14.1"
+tonic = { version = "0.14.1", features = ["transport"] }
+tonic-prost = "0.14.1"
+
+[build-dependencies]
+protoc-bin-vendored = "3.2.0"
+tonic-prost-build = "0.14.1"
