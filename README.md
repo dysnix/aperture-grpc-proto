@@ -10,15 +10,16 @@ The service path is:
 /aperture.Aperture/SubscribeTransactionBatches
 ```
 
-The stream is pre-execution. It carries decoded transaction message data from
-Aperture's shred/deshred pipeline and does not include execution status, logs,
-balances, rewards, inner instructions, or compute units.
+By default the stream is pre-execution. Clients can set
+`SubscribeTransactionsRequest.include_simulation` to append Agave Bank
+simulation status, logs, compute units, fee, return data, bank slot, and timing
+to each emitted transaction.
 
 ## Install
 
 ```toml
 [dependencies]
-aperture-grpc-proto = "0.2.0"
+aperture-grpc-proto = "0.3.0"
 ```
 
 For unreleased development builds:
@@ -41,6 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut client = ApertureClient::connect("http://127.0.0.1:10102").await?;
     let request = SubscribeTransactionsRequest {
         vote: VoteFilter::NonVoteOnly as i32,
+        include_simulation: true,
         ..Default::default()
     };
     let mut stream = client.subscribe_transactions(request).await?.into_inner();
@@ -86,3 +88,6 @@ Filters use raw bytes:
 - `account_required`: 32-byte pubkeys, require all known accounts.
 - `signatures_only`: omit message account/instruction payloads and keep only
   slot/index/vote/timestamp/version/signatures.
+- `include_simulation`: wait for simulation and append a
+  `TransactionSimulation` to each transaction. This can be combined with
+  `signatures_only` for a lightweight signature-and-result stream.
