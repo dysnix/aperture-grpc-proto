@@ -7,5 +7,6 @@ pub mod aperture {
 
 pub use aperture::{
     CompiledInstruction, DecodedTransaction, DecodedTransactionBatch, MessageHeader,
-    SubscribeTransactionsRequest, TransactionVersion, VoteFilter, aperture_client, aperture_server,
+    SimulationStatus, SubscribeTransactionsRequest, TransactionReturnData, TransactionSimulation,
+    TransactionVersion, VoteFilter, aperture_client, aperture_server,
 };

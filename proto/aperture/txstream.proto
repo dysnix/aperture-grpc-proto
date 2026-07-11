@@ -17,6 +17,9 @@ message SubscribeTransactionsRequest {
   // message account/instruction payloads. Useful for lightweight monitoring
   // clients that only need signature timing.
   bool signatures_only = 6;
+  // When true, each emitted transaction waits for Agave Bank simulation and
+  // includes the result in DecodedTransaction.simulation.
+  bool include_simulation = 7;
 }
 
 enum VoteFilter {
@@ -38,6 +41,8 @@ message DecodedTransaction {
   repeated bytes loaded_readonly_addresses = 10;
   bytes recent_blockhash = 11;
   repeated CompiledInstruction instructions = 12;
+  // Present only when the subscription requested include_simulation.
+  TransactionSimulation simulation = 13;
 }
 
 message DecodedTransactionBatch {
@@ -59,4 +64,31 @@ message CompiledInstruction {
   uint32 program_id_index = 1;
   repeated uint32 accounts = 2 [packed = true];
   bytes data = 3;
+}
+
+message TransactionSimulation {
+  optional uint64 bank_slot = 1;
+  SimulationStatus status = 2;
+  optional string error = 3;
+  repeated string logs = 4;
+  optional uint64 compute_units_consumed = 5;
+  optional uint64 fee = 6;
+  TransactionReturnData return_data = 7;
+  uint64 simulated_at_unix_nanos = 8;
+  uint64 processing_time_nanos = 9;
+}
+
+enum SimulationStatus {
+  SIMULATION_STATUS_UNSPECIFIED = 0;
+  SIMULATION_STATUS_SUCCEEDED = 1;
+  SIMULATION_STATUS_FAILED = 2;
+  SIMULATION_STATUS_INVALID_TRANSACTION = 3;
+  SIMULATION_STATUS_BANK_NOT_AVAILABLE = 4;
+  SIMULATION_STATUS_SERVER_OVERLOADED = 5;
+  SIMULATION_STATUS_INTERNAL_ERROR = 6;
+}
+
+message TransactionReturnData {
+  bytes program_id = 1;
+  bytes data = 2;
 }
