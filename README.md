@@ -15,11 +15,16 @@ By default the stream is pre-execution. Clients can set
 simulation status, logs, compute units, fee, return data, bank slot, and timing
 to each emitted transaction.
 
+Each full transaction also reports `alt_resolution` as `"FULL"` when its
+account list is complete or `"PARTIAL"` when one or more address lookup table
+entries could not be resolved. The field is absent when ALT resolution is not
+available.
+
 ## Install
 
 ```toml
 [dependencies]
-aperture-grpc-proto = "0.3.0"
+aperture-grpc-proto = "0.4.0"
 ```
 
 For unreleased development builds:
@@ -79,6 +84,10 @@ Clients resolve instruction account indexes by concatenating:
 ```text
 static_account_keys + loaded_writable_addresses + loaded_readonly_addresses
 ```
+
+Check `alt_resolution` before treating that concatenated list as complete.
+Transactions that do not use lookup tables report `"FULL"`; an absent value
+means the server could not provide resolution status.
 
 Filters use raw bytes:
 

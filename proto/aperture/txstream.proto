@@ -43,6 +43,10 @@ message DecodedTransaction {
   repeated CompiledInstruction instructions = 12;
   // Present only when the subscription requested include_simulation.
   TransactionSimulation simulation = 13;
+  // "FULL" when the emitted account list is complete, "PARTIAL" when one or
+  // more ALT lookups could not be resolved, and absent when ALT resolution is
+  // unavailable.
+  optional string alt_resolution = 14;
 }
 
 message DecodedTransactionBatch {
