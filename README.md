@@ -20,11 +20,25 @@ account list is complete or `"PARTIAL"` when one or more address lookup table
 entries could not be resolved. The field is absent when ALT resolution is not
 available.
 
+## Transaction versions
+
+Version 0.5 adds v1 transactions and `TransactionConfig`. V1 is delivered
+by default on both RPCs with the existing subscription request: no opt-in or
+request-schema change is needed. Upgrade generated clients to understand the
+new enum value and config; older protobuf decoders ignore the additional field.
+
+`TransactionVersion` values remain `Legacy = 0`, `V0 = 1`; `V1 = 2` is new.
+Full v1 responses carry `transaction_config`, even if all its fields are absent.
+Priority fee is **total lamports**. Absent CU and loaded account data limits
+mean zero; absent heap size means 32 KiB. Legacy/v0 have no config. In v1 all
+accounts are static; no ALT addresses are loaded. Signatures-only responses
+retain the version but omit config along with the message payload.
+
 ## Install
 
 ```toml
 [dependencies]
-aperture-grpc-proto = "0.4.0"
+aperture-grpc-proto = "0.5.0"
 ```
 
 For unreleased development builds:

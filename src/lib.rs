@@ -7,8 +7,8 @@ pub mod aperture {
 
 pub use aperture::{
     CompiledInstruction, DecodedTransaction, DecodedTransactionBatch, MessageHeader,
-    SimulationStatus, SubscribeTransactionsRequest, TransactionReturnData, TransactionSimulation,
-    TransactionVersion, VoteFilter, aperture_client, aperture_server,
+    SimulationStatus, SubscribeTransactionsRequest, TransactionConfig, TransactionReturnData,
+    TransactionSimulation, TransactionVersion, VoteFilter, aperture_client, aperture_server,
 };
 
 #[cfg(test)]
@@ -44,5 +44,28 @@ mod tests {
 
         assert_eq!(current.slot, 42);
         assert_eq!(current.alt_resolution, None);
+    }
+    #[test]
+    fn v1_config_preserves_presence_and_explicit_zero() {
+        use super::{TransactionConfig, TransactionVersion};
+        for config in [
+            TransactionConfig::default(),
+            TransactionConfig {
+                priority_fee: Some(0),
+                compute_unit_limit: Some(0),
+                loaded_accounts_data_size_limit: Some(200000),
+                heap_size: None,
+            },
+        ] {
+            let tx = DecodedTransaction {
+                version: TransactionVersion::V1 as i32,
+                transaction_config: Some(config),
+                ..Default::default()
+            };
+            assert_eq!(
+                DecodedTransaction::decode(tx.encode_to_vec().as_slice()).unwrap(),
+                tx
+            );
+        }
     }
 }
