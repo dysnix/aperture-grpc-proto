@@ -47,6 +47,8 @@ message DecodedTransaction {
   // more ALT lookups could not be resolved, and absent when ALT resolution is
   // unavailable.
   optional string alt_resolution = 14;
+  // Present for v1, including when all config values are absent.
+  TransactionConfig transaction_config = 15;
 }
 
 message DecodedTransactionBatch {
@@ -56,6 +58,15 @@ message DecodedTransactionBatch {
 enum TransactionVersion {
   TRANSACTION_VERSION_LEGACY = 0;
   TRANSACTION_VERSION_V0 = 1;
+  TRANSACTION_VERSION_V1 = 2;
+}
+
+message TransactionConfig {
+  // Total lamports, not micro-lamports per compute unit.
+  optional uint64 priority_fee = 1;
+  optional uint32 compute_unit_limit = 2;
+  optional uint32 loaded_accounts_data_size_limit = 3;
+  optional uint32 heap_size = 4;
 }
 
 message MessageHeader {
