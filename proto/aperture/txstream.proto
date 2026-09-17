@@ -20,6 +20,7 @@ message SubscribeTransactionsRequest {
   // When true, each emitted transaction waits for Agave Bank simulation and
   // includes the result in DecodedTransaction.simulation.
   bool include_simulation = 7;
+  SimulationConfig simulation_config = 8;
 }
 
 enum VoteFilter {
@@ -41,7 +42,6 @@ message DecodedTransaction {
   repeated bytes loaded_readonly_addresses = 10;
   bytes recent_blockhash = 11;
   repeated CompiledInstruction instructions = 12;
-  // Present only when the subscription requested include_simulation.
   TransactionSimulation simulation = 13;
   // "FULL" when the emitted account list is complete, "PARTIAL" when one or
   // more ALT lookups could not be resolved, and absent when ALT resolution is
@@ -91,6 +91,8 @@ message TransactionSimulation {
   TransactionReturnData return_data = 7;
   uint64 simulated_at_unix_nanos = 8;
   uint64 processing_time_nanos = 9;
+  SimulationStateDeltas simulation_state_deltas = 10;
+  repeated SimulationInnerInstructions inner_instructions = 11;
 }
 
 enum SimulationStatus {
@@ -106,4 +108,65 @@ enum SimulationStatus {
 message TransactionReturnData {
   bytes program_id = 1;
   bytes data = 2;
+}
+
+message SimulationConfig {
+  SimulationInclude include = 1;
+  repeated bytes account_include = 2;
+  repeated bytes owner_include = 3;
+}
+
+message SimulationInclude {
+  bool compute_units = 1;
+  bool account_deltas = 3;
+  bool token_balance_deltas = 4;
+  bool inner_instructions = 5;
+  bool logs = 6;
+  bool return_data = 7;
+}
+
+message SimulationStateDeltas {
+  repeated AccountDelta account_deltas = 2;
+  repeated TokenBalanceDelta token_balance_deltas = 3;
+}
+
+message AccountDelta {
+  bytes account = 1;
+  SimulationAccountState pre = 2;
+  SimulationAccountState post = 3;
+  bool changed = 4;
+}
+
+message SimulationAccountState {
+  uint64 lamports = 1;
+  bytes owner = 2;
+  bool executable = 3;
+  uint64 rent_epoch = 5;
+}
+
+message TokenBalanceDelta {
+  bytes account = 1;
+  TokenBalanceState pre = 2;
+  TokenBalanceState post = 3;
+  bytes pre_owner = 4;
+  bytes post_owner = 5;
+}
+
+message TokenBalanceState {
+  bytes mint = 1;
+  bytes owner = 2;
+  bytes program_id = 3;
+  uint64 amount = 4;
+}
+
+message SimulationInnerInstructions {
+  uint32 instruction_index = 1;
+  repeated SimulationInnerInstruction instructions = 2;
+}
+
+message SimulationInnerInstruction {
+  bytes program_id = 1;
+  repeated bytes accounts = 2;
+  bytes data = 3;
+  uint32 stack_height = 4;
 }

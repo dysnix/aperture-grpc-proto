@@ -6,9 +6,12 @@ pub mod aperture {
 }
 
 pub use aperture::{
-    CompiledInstruction, DecodedTransaction, DecodedTransactionBatch, MessageHeader,
-    SimulationStatus, SubscribeTransactionsRequest, TransactionConfig, TransactionReturnData,
-    TransactionSimulation, TransactionVersion, VoteFilter, aperture_client, aperture_server,
+    AccountDelta, CompiledInstruction, DecodedTransaction, DecodedTransactionBatch, MessageHeader,
+    SimulationAccountState, SimulationConfig, SimulationInclude, SimulationInnerInstruction,
+    SimulationInnerInstructions, SimulationStateDeltas, SimulationStatus,
+    SubscribeTransactionsRequest, TokenBalanceDelta, TokenBalanceState, TransactionConfig,
+    TransactionReturnData, TransactionSimulation, TransactionVersion, VoteFilter, aperture_client,
+    aperture_server,
 };
 
 #[cfg(test)]
@@ -19,6 +22,25 @@ mod tests {
     struct OldDecodedTransaction {
         #[prost(uint64, tag = "1")]
         slot: u64,
+    }
+
+    #[test]
+    fn explicit_empty_simulation_config_preserves_presence() {
+        use super::{SimulationConfig, SubscribeTransactionsRequest};
+        let request = SubscribeTransactionsRequest {
+            simulation_config: Some(SimulationConfig::default()),
+            ..Default::default()
+        };
+        assert_eq!(
+            SubscribeTransactionsRequest::decode(request.encode_to_vec().as_slice()).unwrap(),
+            request
+        );
+        assert!(
+            SubscribeTransactionsRequest::decode(&[][..])
+                .unwrap()
+                .simulation_config
+                .is_none()
+        );
     }
 
     #[test]
